@@ -3,8 +3,10 @@ Streamlit app — Univariate analysis of annual salaries
 Proba Stat for Data Science, EDC Paris Business School
 
 Run locally:  streamlit run streamlit_app.py
+              streamlit run streamlit_app.py -- other_salaries.csv   (use another CSV)
 """
 from pathlib import Path
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -23,20 +25,25 @@ eur = lambda v: f"{v:,.0f} €".replace(",", " ")
 
 # ------------------------------------------------------------------ data
 @st.cache_data
-def load_default():
-    for p in [Path(__file__).parent / "data" / "salary_data.csv", Path(__file__).parent / "salary_data.csv"]:
+def load_data(path_arg):
+    """CSV path from the command line:  streamlit run streamlit_app.py -- my_file.csv
+    Otherwise falls back to data/salary_data.csv or salary_data.csv in the repo."""
+    here = Path(__file__).parent
+    candidates = ([Path(path_arg)] if path_arg else []) + [here / "data" / "salary_data.csv", here / "salary_data.csv"]
+    for p in candidates:
         if p.exists():
-            return pd.read_csv(p)
-    return None
+            return pd.read_csv(p), str(p.name)
+    return None, None
 
 
-st.sidebar.markdown("## ⚙️ Settings")
-up = st.sidebar.file_uploader("Upload a CSV with a 'salary' column (optional)", type="csv")
-df = pd.read_csv(up) if up else load_default()
+csv_arg = sys.argv[1] if len(sys.argv) > 1 else None
+df, source = load_data(csv_arg)
 if df is None or "salary" not in df.columns:
-    st.error("No data found. Put salary_data.csv in the repo (root or data/) or upload a CSV with a 'salary' column.")
+    st.error("No data found. Run `streamlit run streamlit_app.py -- path/to/file.csv` "
+             "or put salary_data.csv in the repo (root or data/). The file needs a 'salary' column.")
     st.stop()
 
+st.sidebar.markdown("## ⚙️ Settings")
 x = df["salary"].dropna().astype(float).to_numpy()
 n = len(x)
 xs = np.sort(x)
