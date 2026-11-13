@@ -1,9 +1,10 @@
 """
 Streamlit app — Univariate analysis of annual salaries
 Proba Stat for Data Science, EDC Paris Business School
+Authors: Augustine & Marc Ebene Christian
 
-Run locally:  streamlit run streamlit_app.py
-              streamlit run streamlit_app.py -- other_salaries.csv   (use another CSV)
+Run locally:  streamlit run Salary_analysis_final.py
+              streamlit run Salary_analysis_final.py -- other_salaries.csv   (use another CSV)
 """
 from pathlib import Path
 import sys
@@ -26,7 +27,7 @@ eur = lambda v: f"{v:,.0f} €".replace(",", " ")
 # ------------------------------------------------------------------ data
 @st.cache_data
 def load_data(path_arg):
-    """CSV path from the command line:  streamlit run streamlit_app.py -- my_file.csv
+    """CSV path from the command line:  streamlit run Salary_analysis_final.py -- my_file.csv
     Otherwise falls back to data/salary_data.csv or salary_data.csv in the repo."""
     here = Path(__file__).parent
     candidates = ([Path(path_arg)] if path_arg else []) + [here / "data" / "salary_data.csv", here / "salary_data.csv"]
@@ -39,7 +40,7 @@ def load_data(path_arg):
 csv_arg = sys.argv[1] if len(sys.argv) > 1 else None
 df, source = load_data(csv_arg)
 if df is None or "salary" not in df.columns:
-    st.error("No data found. Run `streamlit run streamlit_app.py -- path/to/file.csv` "
+    st.error("No data found. Run `streamlit run Salary_analysis_final.py -- path/to/file.csv` "
              "or put salary_data.csv in the repo (root or data/). The file needs a 'salary' column.")
     st.stop()
 
@@ -136,6 +137,7 @@ st.markdown(f"""
   <span class="tag">Univariate statistics · HR analytics</span>
   <h1>Analysis of Annual Salaries</h1>
   <p>{n} employees · fictional digital-services company · Proba Stat for Data Science, EDC Paris Business School</p>
+  <p style="margin-top:8px;color:#fff;font-weight:600;">By Augustine &amp; Marc Ebene Christian</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -283,4 +285,4 @@ with tabs[5]:
 with st.expander("Raw data"):
     st.dataframe(df, width="stretch")
 
-st.markdown('<div class="foot">Built with Python · pandas · NumPy · Matplotlib · Streamlit</div>', unsafe_allow_html=True)
+st.markdown('<div class="foot">Augustine &amp; Marc Ebene Christian · Built with Python · pandas · NumPy · Matplotlib · Streamlit</div>', unsafe_allow_html=True)
